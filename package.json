@@ -1,0 +1,14 @@
+{
+  "name": "translation.js",
+  "version": "0.0.0",
+  "description": "集成多种翻译引擎、提供统一的翻译接口",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "translate"
+  ],
+  "author": "Milk Lee <milk.lee@qq.com>",
+  "license": "MIT"
+}
