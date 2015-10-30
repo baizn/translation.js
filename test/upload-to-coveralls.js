@@ -4,15 +4,23 @@ const fs = require( 'fs' ) ,
 
 console.info( '准备上传数据到 Coveralls...' );
 
-coveralls.getBaseOptions( function ( err , options ) {
-  options.filepath = ".";
-  coveralls.convertLcovToCoveralls( fs.readFileSync( lcov_path , 'utf8' ).toString() , options , function ( err , postData ) {
-    coveralls.sendToCoveralls( postData , function ( err , response , body ) {
-      console.info( "正在上传..." );
-      send_to_coveralls( err , response , body );
+if ( process.env.TRAVIS ) {
+  send();
+}
+
+// 下面的代码全都来自 [karma-coveralls](https://github.com/caitp/karma-coveralls/blob/1.1.2/lib/index.js)
+
+function send() {
+  coveralls.getBaseOptions( function ( err , options ) {
+    options.filepath = ".";
+    coveralls.convertLcovToCoveralls( fs.readFileSync( lcov_path , 'utf8' ).toString() , options , function ( err , postData ) {
+      coveralls.sendToCoveralls( postData , function ( err , response , body ) {
+        console.info( "正在上传..." );
+        send_to_coveralls( err , response , body );
+      } );
     } );
   } );
-} );
+}
 
 function send_to_coveralls( err , response , body ) {
   // check coveralls.io for issues, they send 200 even when down for maintenance :-\
