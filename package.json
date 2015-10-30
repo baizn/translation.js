@@ -4,7 +4,8 @@
   "description": "集成多种翻译引擎、提供统一的翻译接口",
   "main": "lib/translation.js",
   "scripts": {
-    "test": "istanbul cover test-runner.js"
+    "test": "istanbul cover test-runner.js",
+    "posttest":"node test/upload-to-coveralls"
   },
   "keywords": [
     "translate"
