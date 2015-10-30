@@ -9,7 +9,7 @@
 
 ## 为什么要用 translation.js？
 
-### 统一接口调用方法
+### 统一接口调用方式
 
 互联网上有很多可供免费使用的翻译接口，比如百度翻译、谷歌翻译、有道翻译、必应翻译等等，它们的接口不尽相同，但原理都是发起 HTTP 请求获取翻译结果。translation.js 的目标就是统一这些接口的调用方式，可以使用一种方法调用不同的多个接口。借助于 [Browserify](http://browserify.org/) 与 [SuperAgent](https://github.com/visionmedia/superagent) 的力量，它可以同时运行在 node.js 与浏览器端。
 
@@ -57,4 +57,4 @@ browserify lib/translation.js -t babelify --outfile browser/translation.js
 
 ## One More Thing...
 
-原本这个项目是作为[划词翻译](https://github.com/lmk123/crx-selection-translate) 一部分，被用于统一翻译接口的调用方式；在开发 v6.0 版的划词翻译中，我想扩展它的功能，然后发现它完全可以被抽离出来单独维护————于是我就这么做了 :)
+这个项目原本是[划词翻译](https://github.com/lmk123/crx-selection-translate)的一部分，被用于统一翻译接口的调用方式；在开发 v6.0 版的划词翻译中，我想扩展它的功能，然后发现它完全可以被抽离出来单独维护——于是我就这么做了 :)
