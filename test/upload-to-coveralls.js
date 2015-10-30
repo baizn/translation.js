@@ -2,8 +2,6 @@ const fs = require( 'fs' ) ,
   coveralls = require( 'coveralls' ) ,
   lcov_path = require( 'path' ).resolve( process.cwd() , 'coverage/lcov.info' );
 
-console.info( '准备上传数据到 Coveralls...' );
-
 if ( process.env.TRAVIS ) {
   send();
 }
