@@ -1,25 +1,26 @@
 {
-  "name" : "translation.js" ,
-  "version" : "0.0.0" ,
-  "description" : "集成多种翻译引擎、提供统一的翻译接口" ,
-  "main" : "lib/translation.js" ,
-  "scripts" : {
-    "test" : "istanbul cover test-runner.js"
-  } ,
-  "keywords" : [
+  "name": "translation.js",
+  "version": "0.0.0",
+  "description": "集成多种翻译引擎、提供统一的翻译接口",
+  "main": "lib/translation.js",
+  "scripts": {
+    "test": "istanbul cover test-runner.js"
+  },
+  "keywords": [
     "translate"
-  ] ,
-  "author" : "Milk Lee <milk.lee@qq.com>" ,
-  "license" : "MIT" ,
-  "dependencies" : {
-    "superagent" : "^1.4.0"
-  } ,
-  "devDependencies" : {
-    "babelify" : "^6.4.0" ,
-    "jasmine" : "^2.3.2"
-  } ,
-  "engines" : {
-    "node" : ">=4.1" ,
-    "npm" : "~3.0"
+  ],
+  "author": "Milk Lee <milk.lee@qq.com>",
+  "license": "MIT",
+  "dependencies": {
+    "superagent": "^1.4.0"
+  },
+  "devDependencies": {
+    "babelify": "^6.4.0",
+    "coveralls": "^2.11.4",
+    "jasmine": "^2.3.2"
+  },
+  "engines": {
+    "node": ">=4.1",
+    "npm": "~3.0"
   }
 }
