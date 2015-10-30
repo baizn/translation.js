@@ -9,12 +9,13 @@ jasmine.loadConfig( {
   }
 );
 jasmine.onComplete( passed => {
-  const coveralls = require( 'coveralls' );
+  const coveralls = require( 'coveralls' ),
+    filepath=require( 'path' ).resolve( process.cwd() , 'coverage/lcov.info' );
 
   // 下面的代码全都来自 [karma-coveralls](https://github.com/caitp/karma-coveralls/blob/1.1.2/lib/index.js)
   coveralls.getBaseOptions( ( err , options )=> {
     options.filepath = ".";
-    coveralls.convertLcovToCoveralls( fs.readFileSync( 'coverage/lcov.info' , 'utf8' ).toString() , options , function ( err , postData ) {
+    coveralls.convertLcovToCoveralls( fs.readFileSync( filepath , 'utf8' ).toString() , options , function ( err , postData ) {
       coveralls.sendToCoveralls( postData , ( err , response , body )=> {
         console.info( "uploading..." );
         send_to_coveralls( err , response , body );
