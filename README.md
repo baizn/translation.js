@@ -7,7 +7,7 @@
 [![Bower Version](https://img.shields.io/bower/v/translation.js.svg?style=flat-square)](https://github.com/lmk123/translation.js/releases)
 [![NPM Version](https://img.shields.io/npm/v/translation.js.svg?style=flat-square)](https://www.npmjs.com/package/translation.js)
 
-## 为什么要用 translation.js ？
+## 为什么要用 translation.js？
 
 ### 统一接口调用方法
 
@@ -54,3 +54,7 @@ browserify lib/translation.js -t babelify --outfile browser/translation.js
 ## 许可
 
 [MIT](https://github.com/lmk123/translation.js/blob/master/LICENSE.md)
+
+## One More Thing...
+
+原本这个项目是作为[划词翻译](https://github.com/lmk123/crx-selection-translate) 一部分，被用于统一翻译接口的调用方式；在开发 v6.0 版的划词翻译中，我想扩展它的功能，然后发现它完全可以被抽离出来单独维护————于是我就这么做了 :)
