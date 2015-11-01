@@ -5,7 +5,7 @@
   "main": "lib/translation.js",
   "scripts": {
     "test": "istanbul cover test-runner.js",
-    "posttest":"node test/upload-to-coveralls"
+    "posttest": "node test/upload-to-coveralls"
   },
   "keywords": [
     "translate"
@@ -18,7 +18,8 @@
   "devDependencies": {
     "babelify": "^6.4.0",
     "coveralls": "^2.11.4",
-    "jasmine": "^2.3.2"
+    "jasmine": "^2.3.2",
+    "nock": "^2.17.0"
   },
   "engines": {
     "node": ">=4.1",
