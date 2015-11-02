@@ -160,49 +160,31 @@ describe( '百度翻译' , ()=> {
         } );
     } );
 
-    it( '若百度返回的 error 不为 0，则 resolve null' , done => {
+    it( '若百度返回的 error 不为 0，则 reject null' , done => {
       nock( 'http://fanyi.baidu.com' )
         .post( '/langdetect' , ()=> true )
         .reply( 200 , { error : 1 } );
 
       baidu
         .detect( { text : 'oh' } )
-        .then( lan => {
-          expect( lan ).toBeNull();
-          done();
-        } , ()=> {
+        .then( ()=> {
           fail( '错误的进入了 resolve 分支' );
+          done();
+        } , err => {
+          expect( err ).toBeNull();
           done();
         } );
     } );
   } );
 
-  describe( '的 audio 方法' , ()=> {
-    it( '如果提供了源语种则直接返回语音地址' , done => {
-      baidu
-        .audio( { text : 'test' , from : 'wtf' } )
-        .then( url => {
-          expect( url ).toBe( 'http://fanyi.baidu.com/gettts?lan=wtf&text=test&spd=2&source=web' );
-          done();
-        } , ()=> {
-          fail( '错误的进入了 resolve 分支' );
-          done();
-        } );
-    } );
+  it( '的 audio 方法总是会调用 detect 获取自己的语种' , done => {
+    spyOn( baidu , 'detect' ).and.returnValue( Promise.resolve( 'wtf' ) );
 
-    it( '如果没有提供源语种则调用 detect 方法获取源语种' , done => {
-
-      spyOn( baidu , 'detect' ).and.returnValue( Promise.resolve( 'good boy' ) );
-
-      baidu
-        .audio( { text : 'test' } )
-        .then( url => {
-          expect( url ).toBe( 'http://fanyi.baidu.com/gettts?lan=good boy&text=test&spd=2&source=web' );
-          done();
-        } , ()=> {
-          fail( '错误的进入了 resolve 分支' );
-          done();
-        } );
+    const q = { text : 'test' };
+    baidu.audio( q ).then( url => {
+      expect( baidu.detect ).toHaveBeenCalledWith( q );
+      expect( url ).toBe( 'http://fanyi.baidu.com/gettts?lan=wtf&text=test&spd=2&source=web' );
+      done();
     } );
   } );
 } );
