@@ -175,6 +175,30 @@ describe( '百度翻译' , ()=> {
           done();
         } );
     } );
+
+    it( '若查询对象里有支持的 from，则直接 resolve' , done => {
+      baidu
+        .detect( { text : 'xx' , from : 'ja' } )
+        .then( lan => {
+          expect( lan ).toBe( 'jp' );
+          done();
+        } , ()=> {
+          fail( '错误的进入了 reject 分支' );
+          done();
+        } );
+    } );
+
+    it( '若查询对象里有 from 但不被支持，则 reject null' , done => {
+      baidu
+        .detect( { text : 'x' , from : 'i' } )
+        .then( () => {
+          fail( '错误的进入了 resolve 分支' );
+          done();
+        } , err => {
+          expect( err ).toBeNull();
+          done();
+        } );
+    } );
   } );
 
   it( '的 audio 方法总是会调用 detect 获取自己的语种' , done => {
