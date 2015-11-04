@@ -12,26 +12,26 @@ describe( 'Translation 对象' , ()=> {
   } );
 
   it( 'create 方法能创建指定接口的实例并保存下来' , ()=> {
-    const baidu = t.create( 'Baidu' , { apiKey : 'good' } );
-    expect( t.api.Baidu ).toEqual( [ baidu ] );
+    const baidu = t.create( 'BaiDu' , { apiKey : 'good' } );
+    expect( t.api.BaiDu ).toEqual( [ baidu ] );
   } );
 
   describe( '的 call 方法' , ()=> {
     let b1 , b2 , b3;
 
     beforeEach( ()=> {
-      b1 = t.create( 'Baidu' , { apiKey : '1' } );
-      b2 = t.create( 'Baidu' , { apiKey : '2' } );
-      b3 = t.create( 'Baidu' , { apiKey : '3' } );
+      b1 = t.create( 'BaiDu' , { apiKey : '1' } );
+      b2 = t.create( 'BaiDu' , { apiKey : '2' } );
+      b3 = t.create( 'BaiDu' , { apiKey : '3' } );
       spyOn( b1 , 'translate' ).and.returnValue( Promise.resolve( { text : 'gj' , result : 'xx' } ) );
     } );
 
     it( '会调用实例的对应方法并会对实例进行排序以做到负载均衡' , done => {
 
-      expect( t.api.Baidu ).toEqual( [ b1 , b2 , b3 ] );
+      expect( t.api.BaiDu ).toEqual( [ b1 , b2 , b3 ] );
 
       t.call( 'translate' , { text : 'w' } ).then( ()=> {
-        expect( t.api.Baidu ).toEqual( [ b2 , b3 , b1 ] );
+        expect( t.api.BaiDu ).toEqual( [ b2 , b3 , b1 ] );
         done();
       } , ()=> {
         fail( '错误的进入了 rejection 分支' );
