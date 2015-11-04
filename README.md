@@ -43,13 +43,9 @@ t.detect({ api:'Baidu', text:'test' }).then(lan => console.log(lan) , errMsg => 
 
 目前仅支持百度翻译，其他翻译接口正在积极添加中 ;)
 
-## 生成浏览器可用的文件
+## 浏览器可用的文件
 
-由于项目仍在开发中，所以暂时不提供生成好的浏览器端使用的文件，如需测试请自行生成：
-
-```
-browserify lib/translation.js -t babelify --outfile browser/translation.js
-```
+见 browser/translation.js
 
 ## 许可
 
