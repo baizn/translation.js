@@ -25,7 +25,7 @@ var request = require('superagent'),
   ar: 'ara'
 };
 
-var Baidu = (function () {
+var BaiDu = (function () {
 
   /**
    * 百度翻译构造函数
@@ -34,8 +34,8 @@ var Baidu = (function () {
    * @param {Number} [config.timeout=0] - 查询翻译结果或检测语言时的超时时间，单位毫秒，默认为零。
    */
 
-  function Baidu(config) {
-    _classCallCheck(this, Baidu);
+  function BaiDu(config) {
+    _classCallCheck(this, BaiDu);
 
     if (!config || !config.apiKey) {
       throw new Error('百度翻译必须要有API Key,否则无法使用翻译接口.');
@@ -59,7 +59,7 @@ var Baidu = (function () {
    * @returns {Promise}
    */
 
-  _createClass(Baidu, [{
+  _createClass(BaiDu, [{
     key: 'translate',
     value: function translate(queryObj) {
       var _this = this;
@@ -177,10 +177,10 @@ var Baidu = (function () {
     }
   }]);
 
-  return Baidu;
+  return BaiDu;
 })();
 
-module.exports = Baidu;
+module.exports = BaiDu;
 
 },{"superagent":6}],2:[function(require,module,exports){
 /**
@@ -229,8 +229,8 @@ var _createClass = (function () { function defineProperties(target, props) { for
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var T = (function () {
-  _createClass(T, null, [{
+var Translation = (function () {
+  _createClass(Translation, null, [{
     key: 'errorType',
 
     /**
@@ -251,8 +251,8 @@ var T = (function () {
     }
   }]);
 
-  function T() {
-    _classCallCheck(this, T);
+  function Translation() {
+    _classCallCheck(this, Translation);
 
     this.defaultApi = 'BaiDu';
     this.api = {};
@@ -270,12 +270,12 @@ var T = (function () {
    * @returns {API}
    */
 
-  _createClass(T, [{
+  _createClass(Translation, [{
     key: 'create',
     value: function create(apiName, config) {
       var api = this.api,
           apiArr = api[apiName] || (api[apiName] = []),
-          a = new T[apiName](config);
+          a = new Translation[apiName](config);
 
       apiArr.push(a);
 
@@ -339,22 +339,26 @@ var T = (function () {
         var a = apiArr.shift();
         apiArr.push(a);
         a[method](queryObj).then(resolve, function (superAgentError) {
-          reject(_this.errMsg[T.errorType(superAgentError)]);
+          reject(_this.errMsg[Translation.errorType(superAgentError)]);
         });
       });
     }
   }]);
 
-  return T;
+  return Translation;
 })();
 
 // 绑定构造函数
 
 [require('./baidu'), require('./youdao')].forEach(function (klass) {
-  T[klass.name] = klass;
+  Translation[klass.name] = klass;
 });
 
-module.exports = T;
+module.exports = Translation;
+
+if (typeof window !== 'undefined') {
+  window.Translation = Translation;
+}
 
 },{"./baidu":1,"./youdao":3}],3:[function(require,module,exports){
 // @see http://fanyi.youdao.com/openapi?path=data-mode#bd

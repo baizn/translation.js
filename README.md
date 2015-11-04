@@ -27,25 +27,25 @@
 const Translation = require('translation.js'),
       t = new Translation();
 
-t.create('Baidu',{ apiKey:'YourApiKey - 1' });
-t.create('Baidu',{ apiKey:'YourApiKey - 2' });
+t.create('BaiDu',{ apiKey:'YourApiKey - 1' });
+t.create('BaiDu',{ apiKey:'YourApiKey - 2' });
 // and more...
 
 // 翻译
-t.translate({ api:'Baidu', text:'test' }).then(resultObj => console.dir(resultObj) , errMsg => console.log(errMsg));
+t.translate({ api:'BaiDu', text:'test' }).then(resultObj => console.dir(resultObj) , errMsg => console.log(errMsg));
 
 // 获取这段文本的语音地址
-t.audio({ api:'Baidu', text:'test' }).then(audioUrl => console.log(audioUrl) , errMsg => console.log(errMsg));
+t.audio({ api:'BaiDu', text:'test' }).then(audioUrl => console.log(audioUrl) , errMsg => console.log(errMsg));
 
 // 检测语种
-t.detect({ api:'Baidu', text:'test' }).then(lan => console.log(lan) , errMsg => console.log(errMsg));
+t.detect({ api:'BaiDu', text:'test' }).then(lan => console.log(lan) , errMsg => console.log(errMsg));
 ```
 
-目前仅支持百度翻译，其他翻译接口正在积极添加中 ;)
+## 在浏览器中使用
 
-## 浏览器可用的文件
+载入 browser/translation.js ，构造函数会定义为全局变量 `Translation`。
 
-见 browser/translation.js
+**注意**：内置的翻译接口都不支持 [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS)，请确保浏览器端的运行环境允许跨域，例如你可以在 [Chrome 扩展程序](https://developer.chrome.com/extensions) 中使用。
 
 ## 许可
 
