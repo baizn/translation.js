@@ -11,10 +11,11 @@
   "moduleType" : [
     "globals"
   ] ,
-  "license" : "MIT",
+  "license" : "MIT" ,
   "ignore" : [
     "**/.*" ,
     "test" ,
-    "tsd.json"
+    "tsd.json" ,
+    "test-runner.js"
   ]
 }
