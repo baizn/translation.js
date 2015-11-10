@@ -338,7 +338,12 @@ var Translation = (function () {
 
         var a = apiArr.shift();
         apiArr.push(a);
-        a[method](queryObj).then(resolve, function (superAgentError) {
+        a[method](queryObj).then(function (resultObj) {
+          if ('translate' === method) {
+            resultObj.api = a;
+          }
+          resolve(resultObj);
+        }, function (superAgentError) {
           reject(_this.errMsg[Translation.errorType(superAgentError)]);
         });
       });
@@ -356,6 +361,7 @@ var Translation = (function () {
 
 module.exports = Translation;
 
+/* istanbul ignore next */
 if (typeof window !== 'undefined') {
   window.Translation = Translation;
 }
