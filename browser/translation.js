@@ -355,9 +355,8 @@ var Translation = (function () {
 
 // 绑定构造函数
 
-[require('./baidu'), require('./youdao')].forEach(function (klass) {
-  Translation[klass.name] = klass;
-});
+Translation.BaiDu = require('./baidu');
+Translation.YouDao = require('./youdao');
 
 module.exports = Translation;
 
