@@ -1,9 +1,8 @@
 {
   "name" : "translation.js" ,
-  "version" : "0.1.3" ,
+  "version" : "0.1.4" ,
   "description" : "集成多种翻译引擎、提供统一的翻译接口" ,
   "main" : "lib/translation.js" ,
-  "browser" : "browser/translation.js" ,
   "scripts" : {
     "browser" : "browserify lib/translation.js -t [ babelify --presets [ es2015 ] ] -o browser/translation.js" ,
     "test" : "istanbul cover test-runner.js" ,
