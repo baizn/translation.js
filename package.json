@@ -6,8 +6,7 @@
   "scripts" : {
     "browser" : "browserify lib/translation.js -t [ babelify --presets [ es2015 ] ] -o browser/translation.js" ,
     "test" : "istanbul cover test-runner.js" ,
-    "posttest" : "node test/upload-to-coveralls" ,
-    "tsd" : "tsd"
+    "posttest" : "node test/upload-to-coveralls"
   } ,
   "keywords" : [
     "translate"
