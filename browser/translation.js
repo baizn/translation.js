@@ -3,7 +3,7 @@
 
 'use strict';
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -25,7 +25,7 @@ var request = require('superagent'),
   ar: 'ara'
 };
 
-var BaiDu = (function () {
+var BaiDu = function () {
 
   /**
    * 百度翻译构造函数
@@ -178,15 +178,340 @@ var BaiDu = (function () {
   }]);
 
   return BaiDu;
-})();
+}();
 
 module.exports = BaiDu;
 
-},{"superagent":6}],2:[function(require,module,exports){
+},{"superagent":9}],2:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var request = require('superagent');
+
+module.exports = function () {
+
+  /**
+   * 必应翻译
+   * @param [config]
+   * @param [config.timeout]
+   */
+
+  function _class(config) {
+    _classCallCheck(this, _class);
+
+    this.timeout = (config || {}).timeout || 0;
+
+    this.name = '必应翻译';
+    this.link = 'http://cn.bing.com/dict/';
+  }
+
+  /**
+   * 翻译的方法
+   * @param queryObj
+   * @returns {Promise}
+   */
+
+  _createClass(_class, [{
+    key: 'translate',
+    value: function translate(queryObj) {
+      var _this = this;
+
+      return new Promise(function (resolve, reject) {
+        request.post('http://dict.bing.com.cn/io.aspx').type('form').send({
+          t: 'dict',
+          ut: 'default',
+          q: queryObj.text,
+          ulang: (queryObj.from || 'auto').toUpperCase(),
+          tlang: (queryObj.to || 'auto').toUpperCase()
+        }).timeout(_this.timeout).end(function (err, res) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(_this.transform(res.text, queryObj));
+          }
+        });
+      });
+    }
+
+    /**
+     * 将必应翻译的数据转换为统一格式
+     * @param responseText
+     * @param queryObj
+     * @returns {{}}
+     */
+
+  }, {
+    key: 'transform',
+    value: function transform(responseText, queryObj) {
+      var rawRes = JSON.parse(responseText),
+          ROOT = rawRes.ROOT,
+          obj = {
+        to: queryObj.to || 'auto',
+        response: rawRes,
+        from: ROOT.$LANG,
+        linkToResult: this.link + ('search?q=' + queryObj.text),
+        detailed: []
+      };
+
+      try {
+        var error = rawRes.ERR.$;
+        if (error) {
+          obj.error = error;
+          return obj;
+        }
+      } catch (e) {}
+
+      try {
+        ROOT.DEF[0].SENS.forEach(function (v) {
+          var s = v.$POS + '. ';
+          if (Array.isArray(v.SEN)) {
+            v.SEN.forEach(function (j) {
+              s += j.D.$ + '; ';
+            });
+          } else {
+            s += v.SEN.D.$;
+          }
+          obj.detailed.push(s);
+        });
+      } catch (e) {}
+
+      try {
+        obj.result = ROOT.SMT.R.$.replace(/\{\d+#|\$\d+\}/g, '');
+      } catch (e) {
+        obj.result = '';
+      }
+      return obj;
+    }
+
+    /**
+     * 使用必应翻译检测文本语种。
+     * @param queryObj
+     * @returns {Promise}
+     */
+
+  }, {
+    key: 'detect',
+    value: function detect(queryObj) {
+      var _this2 = this;
+
+      return new Promise(function (resolve, reject) {
+        var from = queryObj.from;
+
+        if (from) {
+          return resolve(from);
+        }
+
+        _this2.translate(queryObj).then(function (result) {
+          return resolve(result.from);
+        }, reject);
+      });
+    }
+
+    /**
+     * @todo 返回语音播放的 url
+     * @param queryObj
+     * @returns {Promise}
+     */
+
+  }, {
+    key: 'audio',
+    value: function audio(queryObj) {
+      return Promise.reject('必应暂不支持语音播放');
+    }
+  }]);
+
+  return _class;
+}();
+
+},{"superagent":9}],3:[function(require,module,exports){
+'use strict';
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Google = require('./google');
+
+module.exports = function (_Google) {
+  _inherits(_class, _Google);
+
+  function _class(config) {
+    _classCallCheck(this, _class);
+
+    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(_class).call(this, config));
+
+    _this.name = '谷歌翻译（国内）';
+    _this.link = 'https://translate.google.cn';
+    _this.apiRoot = 'https://translate.google.cn';
+    return _this;
+  }
+
+  return _class;
+}(Google);
+
+},{"./google":4}],4:[function(require,module,exports){
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var request = require('superagent');
+
+module.exports = function () {
+
+  /**
+   * 谷歌翻译
+   * @param [config]
+   * @param [config.timeout]
+   */
+
+  function _class(config) {
+    _classCallCheck(this, _class);
+
+    this.timeout = (config || {}).timeout || 0;
+
+    this.name = '谷歌翻译';
+    this.link = 'https://translate.google.com';
+    this.apiRoot = 'https://translate.googleapis.com';
+  }
+
+  /**
+   * 翻译的方法
+   * @param queryObj
+   * @returns {Promise}
+   */
+
+  _createClass(_class, [{
+    key: 'translate',
+    value: function translate(queryObj) {
+      var _this = this;
+
+      return new Promise(function (resolve, reject) {
+        request.get(_this.apiRoot + '/translate_a/single').query('client=gtx&sl=' + (queryObj.from || 'auto') + '&tl=' + (queryObj.to || 'auto') + '&hl=zh-CN&dt=t&dt=bd&dj=1&source=icon&q=' + queryObj.text)
+        //  , {
+        //  client : 'gtx' ,
+        //  sl : 'auto' , // 源语言
+        //  tl : queryObj.to || 'auto' , // 目标语言
+        //  hl : 'zh-CN' ,
+        //  dt : [ 't' , 'bd' ] , // 这个地方必须写成 &dt=t&dt=tl，所以没有用对象的方式声明
+        //  dj : 1 ,
+        //  source : 'icon' ,
+        //  q : queryObj.text
+        //} )
+        .timeout(_this.timeout).end(function (err, res) {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(_this.transform(res.body, queryObj));
+          }
+        });
+      });
+    }
+
+    /**
+     * 将必应翻译的数据转换为统一格式
+     * @param rawRes
+     * @param queryObj
+     * @returns {{}}
+     */
+
+  }, {
+    key: 'transform',
+    value: function transform(rawRes, queryObj) {
+      var obj = {
+        text: queryObj.text,
+        to: queryObj.to || 'auto',
+        from: rawRes.src,
+        response: rawRes
+      };
+
+      obj.linkToResult = this.link + ('/#auto/' + obj.to + '/' + queryObj.text);
+
+      if (typeof rawRes === 'string') {
+        obj.error = '谷歌翻译发生了一个错误，可能是因为查询文本过长造成的。';
+      } else {
+
+        if (Array.isArray(rawRes.dict)) {
+          obj.detailed = [];
+          try {
+            rawRes.dict.forEach(function (v) {
+              obj.detailed.push(v.pos + '：' + (v.terms.slice(0, 3) || []).join(','));
+            });
+          } catch (e) {}
+        }
+
+        if (Array.isArray(rawRes.sentences)) {
+
+          // 翻译结果，每一段是一个数组项
+          obj.result = [];
+          try {
+            rawRes.sentences.forEach(function (v) {
+              obj.result.push(v.trans);
+            });
+          } catch (e) {
+            obj.result = '啊哦，谷歌翻译返回了一个奇怪的东西，稍后再试试看吧。';
+          }
+        } else {
+          obj.result = '啊哦，谷歌翻译返回了一个奇怪的东西，稍后再试试看吧。';
+        }
+      }
+      return obj;
+    }
+
+    /**
+     * 使用谷歌翻译检测文本语种。
+     * @param queryObj
+     * @returns {Promise}
+     */
+
+  }, {
+    key: 'detect',
+    value: function detect(queryObj) {
+      var _this2 = this;
+
+      return new Promise(function (resolve, reject) {
+        var from = queryObj.from;
+
+        if (from) {
+          return resolve(from);
+        }
+
+        _this2.translate(queryObj).then(function (result) {
+          return resolve(result.from);
+        }, reject);
+      });
+    }
+
+    /**
+     * 返回语音播放的 url
+     * @param queryObj
+     * @returns {Promise}
+     */
+
+  }, {
+    key: 'audio',
+    value: function audio(queryObj) {
+      var _this3 = this;
+
+      return this.detect(queryObj).then(function (lang) {
+        return encodeURI(_this3.apiRoot + ('/translate_tts?ie=UTF-8&q=' + queryObj.text + '&tl=' + lang + '&client=gtx'));
+      });
+    }
+  }]);
+
+  return _class;
+}();
+
+},{"superagent":9}],5:[function(require,module,exports){
 /**
  * 一个 API 对象
  * @typedef {Object} API
- * @property {String} id - 此接口的唯一 id
  * @property {String} name - 此接口的中文名称
  * @property {String} link - 此接口的在线网址
  * @property {Function} detect - 传递一段文本，返回一个 Promise。正常结果为此 API 自己支持的语种名称，如不支持则 reject null，或者如果出现网络错误则 reject SuperAgent 的 error 对象
@@ -225,11 +550,11 @@ module.exports = BaiDu;
 
 'use strict';
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var Translation = (function () {
+var Translation = function () {
   _createClass(Translation, null, [{
     key: 'errorType',
 
@@ -351,12 +676,15 @@ var Translation = (function () {
   }]);
 
   return Translation;
-})();
+}();
 
 // 绑定构造函数
 
 Translation.BaiDu = require('./baidu');
 Translation.YouDao = require('./youdao');
+Translation.Bing = require('./bing');
+Translation.Google = require('./google');
+Translation.GoogleCN = require('./google-cn');
 
 module.exports = Translation;
 
@@ -365,7 +693,7 @@ if (typeof window !== 'undefined') {
   window.Translation = Translation;
 }
 
-},{"./baidu":1,"./youdao":3}],3:[function(require,module,exports){
+},{"./baidu":1,"./bing":2,"./google":4,"./google-cn":3,"./youdao":6}],6:[function(require,module,exports){
 // @see http://fanyi.youdao.com/openapi?path=data-mode#bd
 
 /**
@@ -378,9 +706,9 @@ if (typeof window !== 'undefined') {
 
 'use strict';
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
-function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj; }
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -392,7 +720,7 @@ var request = require('superagent'),
   fr: 'fr'
 };
 
-var YouDao = (function () {
+var YouDao = function () {
   _createClass(YouDao, null, [{
     key: 'checkRes',
 
@@ -577,11 +905,11 @@ var YouDao = (function () {
   }]);
 
   return YouDao;
-})();
+}();
 
 module.exports = YouDao;
 
-},{"superagent":6}],4:[function(require,module,exports){
+},{"superagent":9}],7:[function(require,module,exports){
 
 /**
  * Expose `Emitter`.
@@ -747,7 +1075,7 @@ Emitter.prototype.hasListeners = function(event){
   return !! this.listeners(event).length;
 };
 
-},{}],5:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 
 /**
  * Reduce `arr` with `fn`.
@@ -772,7 +1100,7 @@ module.exports = function(arr, fn, initial){
   
   return curr;
 };
-},{}],6:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 /**
  * Module dependencies.
  */
@@ -878,11 +1206,29 @@ function serialize(obj) {
   var pairs = [];
   for (var key in obj) {
     if (null != obj[key]) {
-      pairs.push(encodeURIComponent(key)
-        + '=' + encodeURIComponent(obj[key]));
-    }
-  }
+      pushEncodedKeyValuePair(pairs, key, obj[key]);
+        }
+      }
   return pairs.join('&');
+}
+
+/**
+ * Helps 'serialize' with serializing arrays.
+ * Mutates the pairs array.
+ *
+ * @param {Array} pairs
+ * @param {String} key
+ * @param {Mixed} val
+ */
+
+function pushEncodedKeyValuePair(pairs, key, val) {
+  if (Array.isArray(val)) {
+    return val.forEach(function(v) {
+      pushEncodedKeyValuePair(pairs, key, v);
+    });
+  }
+  pairs.push(encodeURIComponent(key)
+    + '=' + encodeURIComponent(val));
 }
 
 /**
@@ -992,6 +1338,18 @@ function parseHeader(str) {
   }
 
   return fields;
+}
+
+/**
+ * Check if `mime` is json or has +json structured syntax suffix.
+ *
+ * @param {String} mime
+ * @return {Boolean}
+ * @api private
+ */
+
+function isJSON(mime) {
+  return /[\/+]json\b/.test(mime);
 }
 
 /**
@@ -1127,20 +1485,6 @@ Response.prototype.setHeaderProperties = function(header){
 };
 
 /**
- * Force given parser
- * 
- * Sets the body parser no matter type.
- * 
- * @param {Function}
- * @api public
- */
-
-Response.prototype.parse = function(fn){
-  this.parser = fn;
-  return this;
-};
-
-/**
  * Parse the given body `str`.
  *
  * Used for auto-parsing of bodies. Parsers
@@ -1152,7 +1496,7 @@ Response.prototype.parse = function(fn){
  */
 
 Response.prototype.parseBody = function(str){
-  var parse = this.parser || request.parse[this.type];
+  var parse = request.parse[this.type];
   return parse && str && (str.length || str instanceof Object)
     ? parse(str)
     : null;
@@ -1263,6 +1607,8 @@ function Request(method, url) {
       err = new Error('Parser is unable to parse the response');
       err.parse = true;
       err.original = e;
+      // issue #675: return the raw response if the response parsing fails
+      err.rawResponse = self.xhr && self.xhr.responseText ? self.xhr.responseText : null;
       return self.callback(err);
     }
 
@@ -1434,6 +1780,20 @@ Request.prototype.type = function(type){
 };
 
 /**
+ * Force given parser
+ *
+ * Sets the body parser no matter type.
+ *
+ * @param {Function}
+ * @api public
+ */
+
+Request.prototype.parse = function(fn){
+  this._parser = fn;
+  return this;
+};
+
+/**
  * Set Accept to `type`, mapping values from `request.types`.
  *
  * Examples:
@@ -1558,7 +1918,7 @@ Request.prototype.attach = function(field, file, filename){
  *       // manual json
  *       request.post('/user')
  *         .type('json')
- *         .send('{"name":"tj"})
+ *         .send('{"name":"tj"}')
  *         .end(callback)
  *
  *       // auto json
@@ -1639,8 +1999,13 @@ Request.prototype.callback = function(err, res){
  */
 
 Request.prototype.crossDomainError = function(){
-  var err = new Error('Origin is not allowed by Access-Control-Allow-Origin');
+  var err = new Error('Request has been terminated\nPossible causes: the network is offline, Origin is not allowed by Access-Control-Allow-Origin, the page is being unloaded, etc.');
   err.crossDomain = true;
+
+  err.status = this.status;
+  err.method = this.method;
+  err.url = this.url;
+
   this.callback(err);
 };
 
@@ -1755,7 +2120,8 @@ Request.prototype.end = function(fn){
   if ('GET' != this.method && 'HEAD' != this.method && 'string' != typeof data && !isHost(data)) {
     // serialize stuff
     var contentType = this.getHeader('Content-Type');
-    var serialize = request.serialize[contentType ? contentType.split(';')[0] : ''];
+    var serialize = this._parser || request.serialize[contentType ? contentType.split(';')[0] : ''];
+    if (!serialize && isJSON(contentType)) serialize = request.serialize['application/json'];
     if (serialize) data = serialize(data);
   }
 
@@ -1767,7 +2133,10 @@ Request.prototype.end = function(fn){
 
   // send stuff
   this.emit('request', this);
-  xhr.send(data);
+
+  // IE11 xhr.send(undefined) sends 'undefined' string as POST payload (instead of nothing)
+  // We need null here if data is undefined
+  xhr.send(typeof data !== 'undefined' ? data : null);
   return this;
 };
 
@@ -1865,11 +2234,14 @@ request.head = function(url, data, fn){
  * @api public
  */
 
-request.del = function(url, fn){
+function del(url, fn){
   var req = request('DELETE', url);
   if (fn) req.end(fn);
   return req;
 };
+
+request.del = del;
+request.delete = del;
 
 /**
  * PATCH `url` with optional `data` and callback `fn(res)`.
@@ -1931,4 +2303,4 @@ request.put = function(url, data, fn){
 
 module.exports = request;
 
-},{"emitter":4,"reduce":5}]},{},[2]);
+},{"emitter":7,"reduce":8}]},{},[5]);
