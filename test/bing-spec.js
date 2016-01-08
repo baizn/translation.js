@@ -8,7 +8,7 @@ nock.disableNetConnect();
 describe( '必应翻译' , ()=> {
   describe( '的 translate 方法' , ()=> {
     it( '在正常情况下会调用 transform 方法返回结果对象' , done => {
-      const rawRes = {
+      const rawRes = JSON.stringify( {
         ROOT : {
           $LANG : '源语种' ,
           DEF : [
@@ -29,7 +29,7 @@ describe( '必应翻译' , ()=> {
           ] ,
           SMT : { R : { $ : '翻译结果' } }
         }
-      };
+      } );
 
       spyOn( bing , 'transform' );
 
@@ -67,19 +67,19 @@ describe( '必应翻译' , ()=> {
   describe( '的 transform 方法' , ()=> {
 
     it( '在没有详细解释时返回的结果只有 result' , ()=> {
-      expect( bing.transform( {
+      expect( bing.transform( JSON.stringify( {
         ROOT : {
           $LANG : '源语种' ,
           SMT : { R : { $ : '翻译结果' } }
         }
-      } , { text : 'test' } ) ).toEqual( jasmine.objectContaining( {
+      } ) , { text : 'test' } ) ).toEqual( jasmine.objectContaining( {
         detailed : [] ,
         result : '翻译结果'
       } ) );
     } );
 
     it( '在没有翻译结果时返回的结果只有详细解释' , ()=> {
-      expect( bing.transform( {
+      expect( bing.transform( JSON.stringify( {
         ROOT : {
           $LANG : '源语种' ,
           DEF : [
@@ -99,14 +99,14 @@ describe( '必应翻译' , ()=> {
             }
           ] // 么有翻译结果
         }
-      } , { text : 'test' } ) ).toEqual( jasmine.objectContaining( {
+      } ) , { text : 'test' } ) ).toEqual( jasmine.objectContaining( {
         detailed : [ 'adj. 其中一条详细解释; ' ] ,
         result : ''
       } ) );
     } );
 
     it( '在没有翻译结果且详细解释不是数组时也只有详细解释' , ()=> {
-      expect( bing.transform( {
+      expect( bing.transform( JSON.stringify( {
         ROOT : {
           $LANG : '源语种' ,
           DEF : [
@@ -124,7 +124,7 @@ describe( '必应翻译' , ()=> {
             }
           ]
         }
-      } , { text : 'test' } ) ).toEqual( jasmine.objectContaining( {
+      } ) , { text : 'test' } ) ).toEqual( jasmine.objectContaining( {
         detailed : [ 'adj. 其中一条详细解释' ] ,
         result : ''
       } ) );
@@ -159,7 +159,7 @@ describe( '必应翻译' , ()=> {
   } );
 
   it( '的 audio 还未实现' , ( done )=> {
-    bing.audio( {} ).then( ()=> {
+    bing.audio().then( ()=> {
       fail( '错误的进入了 resolve 分支' );
       done();
     } , ()=> {
