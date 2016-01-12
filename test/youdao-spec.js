@@ -86,15 +86,6 @@ describe( '有道翻译' , ()=> {
           done();
         } );
     } );
-
-    it( '在数据格式不正确时应该 resolve error' , ()=> {
-      spyOn( YouDao , 'checkRes' ).and.returnValue( false );
-      expect( youdao.transform( { errorCode : 3434 } , { text : 'xx' } ) ).toEqual( {
-        text : 'xx' ,
-        response : { errorCode : 3434 } ,
-        error : '翻译服务器返回了错误的数据，请稍后重试'
-      } );
-    } );
   } );
 
   describe( '的 transform 方法' , ()=> {
@@ -103,11 +94,11 @@ describe( '有道翻译' , ()=> {
         errorCode : 20
       } , result = youdao.transform( rawRes , { text : 'test' } );
 
-      expect( result ).toEqual( {
+      expect( result ).toEqual( jasmine.objectContaining( {
         text : 'test' ,
         response : rawRes ,
         error : youdao.errMsg[ 20 ]
-      } );
+      } ) );
     } );
 
     it( '在有道接口返回正确格式数据时能正常转换' , ()=> {
@@ -125,7 +116,7 @@ describe( '有道翻译' , ()=> {
         response : rawRes ,
         phonetic : '音标' ,
         detailed : rawRes.basic.explains ,
-        result : rawRes.translation.join( '\n' ) ,
+        result : rawRes.translation ,
         linkToResult : 'http://fanyi.youdao.com/translate?i=test'
       } );
     } );
@@ -148,7 +139,7 @@ describe( '有道翻译' , ()=> {
       youdao
         .detect( { text : 'xx' , from : 'ja' } )
         .then( lan => {
-          expect( lan ).toBe( 'jap' );
+          expect( lan ).toBe( 'ja' );
           done();
         } , ()=> {
           fail( '错误的进入了 reject 分支' );
@@ -169,25 +160,13 @@ describe( '有道翻译' , ()=> {
     } );
   } );
 
-  it( '的静态方法 checkRes' , ()=> {
-    expect( YouDao.checkRes( '不是 json' ) ).toBe( false );
-    expect( YouDao.checkRes( { x : '没有errorCode' } ) ).toBe( false );
-    expect( YouDao.checkRes( { x : '既没有 translation，也没有 explains' , errorCode : 0 } ) ).toBe( false );
-    expect( YouDao.checkRes( { x : '没有 explains' , errorCode : 0 , translation : [ '结果' ] } ) ).toBe( true );
-    expect( YouDao.checkRes( {
-      x : '没有 translation' ,
-      errorCode : 0 ,
-      basic : { explains : [ '结果' ] }
-    } ) ).toBe( true );
-  } );
-
   it( '的 audio 方法总是会调用 detect 获取自己的语种' , done => {
-    spyOn( youdao , 'detect' ).and.returnValue( Promise.resolve( 'wtf' ) );
-
     const q = { text : 'test' , from : 'ja' };
     youdao.audio( q ).then( url => {
-      expect( youdao.detect ).toHaveBeenCalledWith( q );
-      expect( url ).toBe( 'http://tts.youdao.com/fanyivoice?keyfrom=fanyi%2Eweb%2Eindex&le=wtf&word=test' );
+      expect( url ).toBe( 'http://tts.youdao.com/fanyivoice?keyfrom=fanyi%2Eweb%2Eindex&le=jap&word=test' );
+      done();
+    } , ()=> {
+      fail( '错误的进入了 reject 分支' );
       done();
     } );
   } );

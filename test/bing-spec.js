@@ -73,8 +73,7 @@ describe( '必应翻译' , ()=> {
           SMT : { R : { $ : '翻译结果' } }
         }
       } ) , { text : 'test' } ) ).toEqual( jasmine.objectContaining( {
-        detailed : [] ,
-        result : '翻译结果'
+        result : [ '翻译结果' ]
       } ) );
     } );
 
@@ -100,8 +99,7 @@ describe( '必应翻译' , ()=> {
           ] // 么有翻译结果
         }
       } ) , { text : 'test' } ) ).toEqual( jasmine.objectContaining( {
-        detailed : [ 'adj. 其中一条详细解释; ' ] ,
-        result : ''
+        detailed : [ 'adj. 其中一条详细解释; ' ]
       } ) );
     } );
 
@@ -125,8 +123,7 @@ describe( '必应翻译' , ()=> {
           ]
         }
       } ) , { text : 'test' } ) ).toEqual( jasmine.objectContaining( {
-        detailed : [ 'adj. 其中一条详细解释' ] ,
-        result : ''
+        detailed : [ 'adj. 其中一条详细解释' ]
       } ) );
     } );
   } );
