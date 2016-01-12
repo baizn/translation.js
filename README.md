@@ -7,7 +7,9 @@
 [![Bower Version](https://img.shields.io/bower/v/translation.js.svg?style=flat-square)](https://github.com/lmk123/translation.js/releases)
 [![NPM Version](https://img.shields.io/npm/v/translation.js.svg?style=flat-square)](https://www.npmjs.com/package/translation.js)
 
-## 为什么要用 translation.js？
+收集多种翻译接口并用同一个 API 调用。
+
+## 特点
 
 ### 统一接口调用方式
 
@@ -15,7 +17,7 @@
 
 ### 负载均衡
 
-以百度翻译接口为例，你可以申请多个 apiKey 在 translation.js 中生成多个百度翻译实例，那么调用百度翻译时， translation.js 会比较各个实例调用的次数然后用次数最少的那个实例进行翻译。这样做能有效降低由于使用次数过多而导致 apiKey 被封禁的风险。
+以百度翻译接口为例，你可以申请多个 apiKey 在 translation.js 中生成多个百度翻译实例，那么调用百度翻译时， translation.js 会轮流使用各个实例进行翻译。这样做能有效降低由于使用次数过多而导致 apiKey 被封禁的风险。
 
 ### 自定义翻译接口
 
@@ -29,7 +31,11 @@ const Translation = require('translation.js'),
 
 t.create('BaiDu',{ apiKey:'YourApiKey - 1' });
 t.create('BaiDu',{ apiKey:'YourApiKey - 2' });
-// and more...
+t.create('YouDao',{ apiKey:'key', keyFrom:'from' });
+t.create('Google');
+t.create('GoogleCN');
+t.create('Bing');
+// 暂时支持上面这些翻译接口
 
 // 翻译
 t.translate({ api:'BaiDu', text:'test' }).then(resultObj => console.dir(resultObj) , errMsg => console.log(errMsg));
@@ -41,9 +47,13 @@ t.audio({ api:'BaiDu', text:'test' }).then(audioUrl => console.log(audioUrl) , e
 t.detect({ api:'BaiDu', text:'test' }).then(lan => console.log(lan) , errMsg => console.log(errMsg));
 ```
 
+## 自定义翻译接口
+
+待写。
+
 ## 在浏览器中使用
 
-载入 browser/translation.js ，构造函数会定义为全局变量 `Translation`。
+载入 [browser/translation.js](https://github.com/lmk123/translation.js/blob/master/browser/translation.js) ，构造函数会定义为全局变量 `Translation`。
 
 **注意**：内置的翻译接口都不支持 [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS)，请确保浏览器端的运行环境允许跨域，例如你可以在 [Chrome 扩展程序](https://developer.chrome.com/extensions) 中使用。
 
