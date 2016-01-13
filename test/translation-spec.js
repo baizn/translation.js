@@ -30,14 +30,14 @@ describe( 'Translation 对象' , ()=> {
 
       expect( t.api.BaiDu ).toEqual( [ b1 , b2 , b3 ] );
 
-      t.call( 'translate' , { text : 'w' } ).then( ()=> {
+      t.call( 'translate' , { api : 'BaiDu' , text : 'w' , from : 'zh' } ).then( ()=> {
         expect( t.api.BaiDu ).toEqual( [ b2 , b3 , b1 ] );
         done();
       } , ()=> {
         fail( '错误的进入了 rejection 分支' );
         done();
       } );
-      expect( b1.translate ).toHaveBeenCalledWith( { text : 'w' } );
+      expect( b1.translate ).toHaveBeenCalledWith( { api : 'BaiDu' , text : 'w' , from : 'zh' } );
     } );
 
     it( '如果没有找到指定 API 会进入 rejection' , done => {
@@ -52,7 +52,7 @@ describe( 'Translation 对象' , ()=> {
     it( '如果调用实例方法时被 reject 了则会调用 T.errorType 判断错误类型' , done => {
       b1.translate.and.stub().and.returnValue( Promise.reject( { hello : 'world' } ) );
       spyOn( T , 'errorType' );
-      t.call( 'translate' , {} ).then( ()=> {
+      t.call( 'translate' , { api : 'BaiDu' } ).then( ()=> {
         fail( '错误的进入了 resolve 分支' );
         done();
       } , ()=> {

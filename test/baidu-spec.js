@@ -1,16 +1,18 @@
 'use strict';
 
-const Baidu = require( '../lib/baidu' ) ,
-  baidu = new Baidu( { apiKey : 'Hs18iW3px3gQ6Yfy6Za0QGg4' } ) ,
+const BaiDu = require( '../lib/baidu' ) ,
+  baidu = new BaiDu( { apiKey : 'Hs18iW3px3gQ6Yfy6Za0QGg4' } ) ,
   nock = require( 'nock' );
 
 nock.disableNetConnect();
+
+require( './standard' )( BaiDu );
 
 describe( '百度翻译' , ()=> {
   it( '在初始化时若没有提供API Key则应该报错' , ()=> {
     let pass = false;
     try {
-      new Baidu();
+      new BaiDu();
     }
     catch ( e ) {
       pass = true;
@@ -45,7 +47,7 @@ describe( '百度翻译' , ()=> {
             text : 'test' ,
             from : 'baidu-from' ,
             to : 'baidu-to' ,
-            result : 'result-1' ,
+            result : [ 'result-1' ] ,
             response : rawRes ,
             linkToResult : 'http://fanyi.baidu.com/#auto/baidu-to/test'
           } );
@@ -73,9 +75,9 @@ describe( '百度翻译' , ()=> {
         .then( result => {
           expect( result ).toEqual( {
             text : 'test' ,
-            from : 'baidu-from' ,
             to : 'baidu-to' ,
-            result : '啊哦，百度返回了一个奇怪的东西，等一会儿再试试看吧。' ,
+            from : 'baidu-from' ,
+            error : '没有返回有效的翻译结果，请稍后重试。' ,
             response : rawRes ,
             linkToResult : 'http://fanyi.baidu.com/#auto/baidu-to/test'
           } );
@@ -147,12 +149,12 @@ describe( '百度翻译' , ()=> {
     it( '在网络正常时应该返回 lan 字段的值' , done => {
       nock( 'http://fanyi.baidu.com' )
         .post( '/langdetect' , ()=> true )
-        .reply( 200 , { error : 0 , lan : 'good boy' } );
+        .reply( 200 , { error : 0 , lan : 'cht' } );
 
       baidu
         .detect( { text : 'oh' } )
         .then( lan => {
-          expect( lan ).toBe( 'good boy' );
+          expect( lan ).toBe( 'zh-TW' );
           done();
         } , ()=> {
           fail( '错误的进入了 resolve 分支' );
@@ -180,7 +182,7 @@ describe( '百度翻译' , ()=> {
       baidu
         .detect( { text : 'xx' , from : 'ja' } )
         .then( lan => {
-          expect( lan ).toBe( 'jp' );
+          expect( lan ).toBe( 'ja' );
           done();
         } , ()=> {
           fail( '错误的进入了 reject 分支' );
@@ -202,12 +204,12 @@ describe( '百度翻译' , ()=> {
   } );
 
   it( '的 audio 方法总是会调用 detect 获取自己的语种' , done => {
-    spyOn( baidu , 'detect' ).and.returnValue( Promise.resolve( 'wtf' ) );
+    spyOn( baidu , 'detect' ).and.returnValue( Promise.resolve( 'zh-CN' ) );
 
     const q = { text : 'test' };
     baidu.audio( q ).then( url => {
       expect( baidu.detect ).toHaveBeenCalledWith( q );
-      expect( url ).toBe( 'http://fanyi.baidu.com/gettts?lan=wtf&text=test&spd=2&source=web' );
+      expect( url ).toBe( 'http://fanyi.baidu.com/gettts?lan=zh&text=test&spd=2&source=web' );
       done();
     } );
   } );
