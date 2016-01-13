@@ -1,9 +1,12 @@
 'use strict';
 
-const bing = new (require( '../lib/bing' ))() ,
+const Bing = require( '../lib/bing' ) ,
+  bing = new Bing() ,
   nock = require( 'nock' );
 
 nock.disableNetConnect();
+
+require( './standard' )( Bing );
 
 describe( '必应翻译' , ()=> {
   describe( '的 translate 方法' , ()=> {
@@ -125,42 +128,6 @@ describe( '必应翻译' , ()=> {
       } ) , { text : 'test' } ) ).toEqual( jasmine.objectContaining( {
         detailed : [ 'adj. 其中一条详细解释' ]
       } ) );
-    } );
-  } );
-
-  describe( '的 detect 方法' , ()=> {
-
-    it( '如果有 from 了则直接返回 from' , ( done )=> {
-      bing.detect( { from : 'x' } ).then( ( lang )=> {
-        expect( lang ).toBe( 'x' );
-        done();
-      } , ()=> {
-        fail( '错误的进入了 reject 分支' );
-        done();
-      } );
-    } );
-
-    it( '否则就会先翻译一遍，从翻译结果里拿' , ( done )=> {
-      spyOn( bing , 'translate' ).and.returnValue( Promise.resolve( {
-        from : 'y'
-      } ) );
-
-      bing.detect( { text : 'x' } ).then( ( lang )=> {
-        expect( lang ).toBe( 'y' );
-        done();
-      } , ()=> {
-        fail( '错误的进入了 reject 分支' );
-        done();
-      } );
-    } );
-  } );
-
-  it( '的 audio 还未实现' , ( done )=> {
-    bing.audio().then( ()=> {
-      fail( '错误的进入了 resolve 分支' );
-      done();
-    } , ()=> {
-      done();
     } );
   } );
 } );

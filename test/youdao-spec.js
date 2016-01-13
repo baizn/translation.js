@@ -6,6 +6,8 @@ const YouDao = require( '../lib/youdao' ) ,
 
 nock.disableNetConnect();
 
+require( './standard' )( YouDao );
+
 describe( '有道翻译' , ()=> {
   it( '在初始化时若没有提供API Key及 key from则应该报错' , ()=> {
     let pass = 0;
@@ -119,44 +121,6 @@ describe( '有道翻译' , ()=> {
         result : rawRes.translation ,
         linkToResult : 'http://fanyi.youdao.com/translate?i=test'
       } );
-    } );
-  } );
-
-  describe( '的 detect 方法' , ()=> {
-    it( '若查询对象没有提供源语种，则直接 reject null' , done => {
-      youdao
-        .detect( { text : 'xx' } )
-        .then( ()=> {
-          fail( '错误的进入了 resolve 分支' );
-          done();
-        } , err => {
-          expect( err ).toBeNull();
-          done();
-        } );
-    } );
-
-    it( '若查询对象里有支持的 from，则直接 resolve' , done => {
-      youdao
-        .detect( { text : 'xx' , from : 'ja' } )
-        .then( lan => {
-          expect( lan ).toBe( 'ja' );
-          done();
-        } , ()=> {
-          fail( '错误的进入了 reject 分支' );
-          done();
-        } );
-    } );
-
-    it( '若查询对象里有 from 但不被支持，则 reject null' , done => {
-      youdao
-        .detect( { text : 'x' , from : 'i' } )
-        .then( () => {
-          fail( '错误的进入了 resolve 分支' );
-          done();
-        } , err => {
-          expect( err ).toBeNull();
-          done();
-        } );
     } );
   } );
 
