@@ -4,7 +4,6 @@
 [![Coverage Status](https://img.shields.io/coveralls/lmk123/translation.js/master.svg?style=flat-square)](https://coveralls.io/github/lmk123/translation.js?branch=master)
 [![dependencies Status](https://img.shields.io/david/lmk123/translation.js.svg?style=flat-square)](https://david-dm.org/lmk123/translation.js)
 [![devDependencies Status](https://img.shields.io/david/dev/lmk123/translation.js.svg?style=flat-square)](https://david-dm.org/lmk123/translation.js#info=devDependencies)
-[![Bower Version](https://img.shields.io/bower/v/translation.js.svg?style=flat-square)](https://github.com/lmk123/translation.js/releases)
 [![NPM Version](https://img.shields.io/npm/v/translation.js.svg?style=flat-square)](https://www.npmjs.com/package/translation.js)
 
 收集多种翻译接口并用同一个 API 调用。
