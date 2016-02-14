@@ -14,14 +14,15 @@
   "author" : "Milk Lee <milk.lee@qq.com>" ,
   "license" : "MIT" ,
   "dependencies" : {
-    "superagent" : "^1.6.1"
+    "superagent" : "^1.7.2"
   } ,
   "devDependencies" : {
-    "babel-preset-es2015" : "^6.3.13" ,
+    "babel-preset-es2015" : "^6.5.0" ,
     "babelify" : "^7.2.0" ,
     "coveralls" : "^2.11.6" ,
+    "istanbul" : "^0.4.2" ,
     "jasmine" : "^2.4.1" ,
-    "nock" : "^5.2.0"
+    "nock" : "^7.0.2"
   } ,
   "engines" : {
     "node" : ">=4.0"
