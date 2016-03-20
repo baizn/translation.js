@@ -16,7 +16,7 @@
 
 ### 负载均衡
 
-以百度翻译接口为例，你可以申请多个 apiKey 在 translation.js 中生成多个百度翻译实例，那么调用百度翻译时， translation.js 会轮流使用各个实例进行翻译。这样做能有效降低由于使用次数过多而导致 apiKey 被封禁的风险。
+以有道翻译接口为例，你可以申请多个 apiKey 在 translation.js 中生成多个翻译实例，那么调用有道翻译时， translation.js 会轮流使用各个实例进行翻译。这样做能有效降低由于使用次数过多而导致 apiKey 被封禁的风险。
 
 ### 自定义翻译接口
 
@@ -28,13 +28,12 @@
 const Translation = require('translation.js'),
       t = new Translation();
 
-t.create('BaiDu',{ apiKey:'YourApiKey - 1' });
-t.create('BaiDu',{ apiKey:'YourApiKey - 2' });
+t.create('BaiDu');
 t.create('YouDao',{ apiKey:'key', keyFrom:'from' });
 t.create('Google');
 t.create('GoogleCN');
 t.create('Bing');
-// 暂时支持上面这些翻译接口
+// 暂时只集成了上面这些翻译接口
 
 // 翻译
 t.translate({ api:'BaiDu', text:'test' }).then(resultObj => console.dir(resultObj) , errMsg => console.log(errMsg));
@@ -46,9 +45,21 @@ t.audio({ api:'BaiDu', text:'test' }).then(audioUrl => console.log(audioUrl) , e
 t.detect({ api:'BaiDu', text:'test' }).then(lan => console.log(lan) , errMsg => console.log(errMsg));
 ```
 
+## 内置的翻译接口
+
+translation.js 内置了五种翻译接口：[有道翻译](http://fanyi.youdao.com/)、[百度翻译](http://fanyi.baidu.com/)、[必应翻译](http://cn.bing.com/dict/)、[谷歌翻译](https://translate.google.com/)与[谷歌国内翻译](http://translate.google.cn/)。其中，只有有道翻译使用了[官方的 API 接口](http://fanyi.youdao.com/openapi?path=data-mode)，其它翻译都是使用各自的网页翻译里的翻译接口——因为官方发布的 API 接口都是要收费的，并且会有调用频率限制。
+
+也就是说，只有有道翻译是需要 `apiKey` 与 `keyFrom` 参数的，其它翻译接口只需要创建一个实例即可。
+
+另外，谷歌翻译与谷歌国内翻译返回的结果是完全一样的，只有一点不同：谷歌翻译需要翻墙使用，而谷歌国内翻译不需要。
+
 ## 自定义翻译接口
 
-待写。
+ 1. 参照 [lib/youdao.js](https://github.com/lmk123/translation.js/blob/master/lib/youdao.js) 写你自己的翻译接口构造函数。
+ 2. 将你的构造函数设置为 translation.js 的一个属性：`Translation.YourAPI = YourAPI;`
+ 3. 创建你的翻译接口实例：`const t = new Translation; t.create('YourAPI');`
+
+然后你就可以调用自己的翻译接口了：`t.translate({api:'YourAPI',text:'test'});`
 
 ## 在浏览器中使用
 
